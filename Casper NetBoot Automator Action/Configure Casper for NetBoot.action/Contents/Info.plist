@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>AMAccepts</key>
+	<dict>
+		<key>Container</key>
+		<string>List</string>
+		<key>Optional</key>
+		<false/>
+		<key>Types</key>
+		<array>
+			<string>com.apple.cocoa.path</string>
+		</array>
+	</dict>
+	<key>AMApplication</key>
+	<string>System Image Utility</string>
+	<key>AMCanShowSelectedItemsWhenRun</key>
+	<false/>
+	<key>AMCanShowWhenRun</key>
+	<true/>
+	<key>AMCategory</key>
+	<string>AMCategorySystem</string>
+	<key>AMDefaultParameters</key>
+	<dict>
+		<key>allowInvalidCert</key>
+		<true/>
+		<key>casperImagingApp</key>
+		<string></string>
+		<key>configAutoLogin</key>
+		<true/>
+		<key>createPrefsFile</key>
+		<true/>
+		<key>jssAddress</key>
+		<string></string>
+		<key>launchImagingAtLogin</key>
+		<true/>
+	</dict>
+	<key>AMDescription</key>
+	<dict>
+		<key>AMAlert</key>
+		<string>Compatible with Mac OS 10.7 only.</string>
+		<key>AMDAlert</key>
+		<string>For use with Mac OS 10.7 only.</string>
+		<key>AMDInput</key>
+		<string>Can accept either a .nbi folder (the output of Create Disk Image - NetBoot) or a mounted volume.</string>
+		<key>AMDNote</key>
+		<string> </string>
+		<key>AMDOptions</key>
+		<string>Configure automatic login: Sets up an automatic login with a predefined root password.  Preauthorization password is this user's password to gain root access.</string>
+		<key>AMDRelatedActions</key>
+		<string>Create Image</string>
+		<key>AMDRequires</key>
+		<string>Casper Imaging app</string>
+		<key>AMDSummary</key>
+		<string> </string>
+		<key>AMDWebsite</key>
+		<string>www.jamfsoftware.com</string>
+	</dict>
+	<key>AMIconName</key>
+	<string>System</string>
+	<key>AMKeywords</key>
+	<array/>
+	<key>AMName</key>
+	<string>Configure Casper for NetBoot</string>
+	<key>AMProvides</key>
+	<dict>
+		<key>Container</key>
+		<string>List</string>
+		<key>Types</key>
+		<array>
+			<string>com.apple.cocoa.path</string>
+		</array>
+	</dict>
+	<key>AMRequiredResources</key>
+	<array/>
+	<key>AMWarning</key>
+	<dict>
+		<key>Action</key>
+		<string> </string>
+		<key>ApplyButton</key>
+		<string>Add</string>
+		<key>IgnoreButton</key>
+		<string>Cancel</string>
+		<key>Level</key>
+		<integer>0</integer>
+		<key>Message</key>
+		<string>Warning Message</string>
+	</dict>
+	<key>BuildMachineOSBuild</key>
+	<string>11C74</string>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleExecutable</key>
+	<string>Configure Casper for NetBoot</string>
+	<key>CFBundleIdentifier</key>
+	<string>jamfsoftware.Configure-Casper-for-NetBoot</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>Configure Casper for NetBoot</string>
+	<key>CFBundlePackageType</key>
+	<string>BNDL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.1</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>1.1</string>
+	<key>DTCompiler</key>
+	<string>com.apple.compilers.llvm.clang.1_0</string>
+	<key>DTPlatformBuild</key>
+	<string>4D151a</string>
+	<key>DTPlatformVersion</key>
+	<string>GM</string>
+	<key>DTSDKBuild</key>
+	<string>11A511a</string>
+	<key>DTSDKName</key>
+	<string>macosx10.7</string>
+	<key>DTXcode</key>
+	<string>0420</string>
+	<key>DTXcodeBuild</key>
+	<string>4D151a</string>
+	<key>NSHumanReadableCopyright</key>
+	<string>Copyright © 2011 JAMF Software. All rights reserved.</string>
+	<key>NSPrincipalClass</key>
+	<string>Casper_Imaging_for_Mac_OS_10</string>
+</dict>
+</plist>

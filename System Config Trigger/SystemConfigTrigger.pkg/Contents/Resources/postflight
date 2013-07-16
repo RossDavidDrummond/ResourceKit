@@ -1,0 +1,6 @@
+#!/bin/sh
+
+####################################################
+## Load the System Configuration Trigger Task
+####################################################
+/bin/launchctl load /Library/LaunchAgents/com.jamfsoftware.support.SystemConfigTrigger.plist

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script type="text/javascript" src="jquery-1.6.min.js"></script>
+        <script type="text/javascript" src="MainJS.js"></script> 
+        
+        <link rel="stylesheet" type="text/css" href="main.css" />
+        
+        <script type="text/javascript">
+            
+            $(document).ready(function(){
+                                            
+                $(".trigger").live("click", function(){      
+                    // Hides and Displays Div
+                   $(this).toggleClass("active").next().slideToggle("slow");  
+                    
+                    // Adds arrow icon as image
+                    $(this).children("a").children("#arrowicon").toggleClass("rotate90");  
+                    // Rotates the icon image as div opens
+                   if($(this).children("a").children("#arrowicon").hasClass("rotate90")){
+                        $(this).children("a").children("#arrowicon").css("background-position", "-64px -16px");
+                   }else{
+                        $(this).children("a").children("#arrowicon").css("background-position", "-32px -16px");
+                   }
+               }); 
+                              
+            });
+        </script>
+    </head>
+    <body >
+
+        <div class="container"> 
+            <div id="header">Parallels Virtual Machines</div>
+            
+            <div id="content">
+                <table id="mainTable">
+                    
+                </table>
+            </div>
+            <div id="footer"></div>
+        </div>
+
+    </body>
+</html>

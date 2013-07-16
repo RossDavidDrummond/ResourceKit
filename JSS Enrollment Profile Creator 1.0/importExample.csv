@@ -1,0 +1,6 @@
+Username-Required,Real Name,Phone,Email,Position,Room,Building,Department,Is Purchased,Is Leased,PO Number,Vendor,AppleCare ID,OS AppleCare ID,Purchase Price,Purchasing Account,PO Date,Warranty Expires,Lease Expires,OS Maintenance Expires,Life Expectancy,Purchasing Contact
+jdoe,John Doe,555-555-5555,jdoe@company.com,Developer,202,,,true,false,11111,Apple,22222,33333,6.66,MyAccount,2010-05-03,2010-05-02,,2010-06-03,0,Jane Doe
+ajohnson,Aaron Johnson,555-555-5555,ajohnson@company.com,Developer,202,,,true,false,11111,Apple,22222,33333,6.66,MyAccount,2010-05-03,2010-05-02,,2010-06-03,0,Jane Doe
+bsmith,Bob Smith,555-555-5555,bsmith@jamfsoftware.com,Developer,202,,,true,false,11111,Apple,22222,33333,6.66,MyAccount,2010-05-03,2010-05-02,,2010-06-03,0,John Doe
+bgreen,Benny Green,555-555-5555,bgreen@jamfsoftware.com,Developer,202,,,true,false,11111,Apple,22222,33333,6.66,MyAccount,2010-05-03,2010-05-02,,2010-06-03,0,John Doe
+eanderson,Ed Anderson,555-555-5555,eanderson@jamfsoftware.com,Developer,202,,,true,false,11111,Apple,22222,33333,6.66,MyAccount,2010-05-03,2010-05-02,,2010-06-03,0,John Doe

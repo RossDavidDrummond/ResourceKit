@@ -1,0 +1,13 @@
+#!/bin/sh
+
+# Draw the Desktop Background
+if [ -e /System/Library/CoreServices/Dock.app/Contents/Resources/LoginDesktopPicture ]; then
+	/System/Library/CoreServices/Dock.app/Contents/Resources/LoginDesktopPicture
+fi
+
+# Launch Casper
+/Applications/Casper.app/Contents/MacOS/Casper
+
+sh
+
+shutdown -h now

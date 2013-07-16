@@ -1,0 +1,17 @@
+Title System Configuration Trigger
+Version 
+Description This package will install an additional policy trigger onto client machines that are managed by the Casper Suite.  The policy trigger will check for policies whenever a system configuration changes.  This includes network changes.  For example, when changing from a wireless to a wired network, the client will then check up on the JSS to see if there are any policies in scope for the "SystemConfigTrigger" trigger.
+DefaultLocation /
+DeleteWarning 
+
+### Package Flags
+
+NeedsAuthorization YES
+Required NO
+Relocatable NO
+RequiresReboot NO
+UseUserMask NO
+OverwritePermissions NO
+InstallFat NO
+RootVolumeOnly NO
+OnlyUpdateInstalledLanguages NO

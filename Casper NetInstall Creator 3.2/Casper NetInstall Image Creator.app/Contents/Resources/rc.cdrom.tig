@@ -1,0 +1,293 @@
+#!/bin/sh
+# $Id: rc.cdrom,v 1.70 2005/01/26 00:15:11 pmb Exp $
+# Copyright 2000-2005, Apple Computer Inc.
+# pmb
+
+#
+# Arg[1] is passed from /etc/rc
+#
+BootType=${1:-multiuser}
+
+#
+# Disable prebinding-on-the-fly while we're CD booted
+#
+export DYLD_NO_FIX_PREBINDING=1
+
+#
+# Sanity check date & time. Pin to 4/1/1976.
+#
+if [ `date +%s` -lt 197193600 ]; then
+  date 040100001976
+fi
+
+#
+# The kernel default is too low
+# Actually, it appears to be 5120...
+#sysctl -w kern.maxvnodes=2500
+
+#
+# Source the preheat script if it exists, speeds CD boot by > 1 minute
+#
+if [ -x /System/Installation/CDIS/preheat.sh ]; then
+	/System/Installation/CDIS/preheat.sh
+fi
+
+#
+# Load Kernel Extensions
+#
+# We used to use the -j to avoid jettisoning the kernel linker, now
+# we want to do it so we can load all the Extensions in /S/L/Extensions
+# kextd -j
+kextd -j
+
+#
+# Set up the loopback address so NetInfo can talk to itself
+#
+/sbin/ifconfig lo0 127.0.0.1 netmask 255.0.0.0 up
+
+# 
+# mount root_device to update vnode information
+#
+mount -u -o ro /
+
+#
+# Create a RAM disk for /Volumes
+#
+echo "Creating RAM Disk for /Volumes"
+dev=`hdik -drivekey system-image=yes -nomount ram://256`  # 128k
+if [ $? -eq 0 ] ; then
+  newfs $dev
+  mount -o union -o nobrowse $dev /Volumes
+fi
+
+#
+# Create a ram disk for /tmp
+# The /tmp ram disk must be created first, else weird stuff happens
+#
+echo "Creating RAM Disk for /private/tmp"
+dev=`hdik -drivekey system-image=yes -nomount ram://8192 `  # 4MB
+if [ $? -eq 0 ] ; then
+  newfs $dev
+  mount -o union $dev /private/tmp
+fi
+chmod 1777 /private/tmp
+
+# Copy read-only files into their read-write locations
+cp -R /Library/Preferences/SystemConfiguration.cp/* /private/tmp/
+cp -R /var/run.cp /private/tmp/run
+
+#
+# Create a RAM disk for /Library/Caches
+#
+echo "Creating a RAM disk for /Library/Caches"
+dev=`hdik -drivekey system-image=yes -nomount ram://3072` # 1.5MB
+if [ $? -eq 0 ] ; then
+  newfs $dev
+  mount -o union $dev /Library/Caches
+fi
+chmod 1777 /Library/Caches
+
+#
+# Create a RAM disk  for launchd
+#
+echo "Creating RAM Disk for /var/launchd"
+dev=`hdik -drivekey system-image=yes -nomount ram://256`  # 128k
+if [ $? -eq 0 ] ; then
+  newfs $dev
+  mount -o union -o nobrowse $dev /var/launchd
+fi
+
+#
+# Create a RAM disk  for /var/db (netinfo, others)
+#
+
+# allow netinfo to run in standard location; ramdisk in /var/db/netinfo for it
+echo "Creating RAM Disk for /private/var/db"
+dev=`hdik -drivekey system-image=yes -nomount ram://1024`  # 512k
+if [ $? -eq 0 ] ; then
+  newfs $dev
+  mount -o union -o nobrowse $dev /private/var/db
+fi
+
+#
+# Create a RAM disk  for /var/netboot
+#
+
+# This RAM disk is created so that Casper Imaging knows that the client is netbooted
+echo "Creating RAM Disk for /private/var/netboot"
+dev=`hdik -drivekey system-image=yes -nomount ram://256`  # 128k
+if [ $? -eq 0 ] ; then
+  newfs $dev
+  mount -o union -o nobrowse $dev /private/var/netboot
+fi
+
+# untar the canned NI db into /var/db/netinfo ramdisk
+cd /
+tar -xzf /etc/nidb.tgz
+
+launchctl load /System/Library/LaunchDaemons/com.apple.nibindd.plist
+
+
+#
+# Start syslogd as a daemon
+#
+launchctl load /System/Library/LaunchDaemons/com.apple.syslogd.plist
+
+#
+# Start services registered /etc/mach_init.d
+#
+/usr/libexec/register_mach_bootstrap_servers /etc/mach_init.d
+
+#
+# Start the mDNSResponder
+#
+# Set the machine name to resolved ip address. If it isn't resolved by an external DNS,
+# we'll use the IP address of the machine as the machine name
+
+# If your clients get a different DNS than the machine on which you created the image set,
+# you might need to uncomment this line to give configd time to update /etc/resolv.conf
+echo "Waiting for network interface configuration to complete..."
+ipconfig waitall
+
+myIP=`ifconfig en0 | awk '/inet / {print $2}'`
+# I'm using "lookupd" to resolve the name because configd generally needs a couple more
+# seconds to run Kicker and update `hostname`
+myName=`lookupd -f host ip_address $myIP | awk '/^name: / { gsub("\\\\.", "-"); print $2}'`
+if [ "${myName}" == "localhost" -o "${myName}" == "" ]; then
+	myName=`ifconfig en0 | awk '/inet / { gsub("\\\\.", "-"); print $2}'`
+fi
+echo "Setting the LocalHostName to \"$myName\""
+scutil --set ComputerName $myName
+scutil --set LocalHostName $myName
+launchctl load /System/Library/LaunchDaemons/com.apple.mDNSResponder.plist
+
+
+#
+# Set default power management policy for the Install CD
+#
+(sleep 120; /usr/bin/pmset force -a sleep 0 displaysleep 0 reduce 1 powerbutton 0 disksleep 0) &
+
+#
+# Start CrashReporter
+# By default, /Library/Logs won't get created on a NetInstall-Restore image, so it must be 
+# created manually to enabled crash reporting.  Also, this application will initiate
+# the WindowServer if its not already running.
+#
+if [ -x /usr/libexec/crashreporterd -a -d /Library/Logs ]; then
+    echo "Creating RAM Disk for Crashreporter"
+    # Create 1MB RAM disk
+    dev=`hdik -drivekey system-image=yes -nomount ram://2048`
+    if [ $? -eq 0 ] ; then
+        # Init (UFS) RAM disk
+        newfs $dev
+        # Mount writeable /Library/, union'ed
+        mount -o union -o nobrowse $dev /Library/Logs/
+    fi
+  	echo "Launching Crash Reporter"
+  	/usr/libexec/crashreporterd -d &    
+fi
+
+#
+# Source a local configuration script if present
+#
+if [ -f /etc/rc.cdrom.local ]; then
+	/etc/rc.cdrom.local
+fi
+
+#
+# Source a pre-WindowServer script if present
+# (This is inaccurate, the WindowServer is now started on demand.)
+#
+if [ -f /etc/rc.cdrom.preWS ]; then
+	/etc/rc.cdrom.preWS
+fi
+
+#
+# Start AppleTypeServices
+#
+START_ATS=/System/Library/Frameworks/ApplicationServices.framework/Frameworks/ATS.framework/Support/StartATSServer
+
+if [ -f "${START_ATS}" ]; then
+	"${START_ATS}"
+fi
+
+#
+# Start the PasteBoardServer
+#
+START_PBS=/System/Library/CoreServices/pbs
+
+if [ -f "${START_PBS}" ]; then
+	"${START_PBS}" &
+fi
+
+#
+# Source a post-WindowServer script if present
+# (This is inaccurate, the WindowServer is now started on demand.)
+#
+if [ -f /etc/rc.cdrom.postWS ]; then
+	/etc/rc.cdrom.postWS
+fi
+
+## The rc.cdrom.postWS script is expected to handle everything from here
+## We should not get past this point
+
+
+#
+# The Launcher is responsible for the progress bar while the Installer loads
+#
+Launch=/System/Installation/CDIS/splash
+
+#
+# installer or min installer?
+#
+if   [ -e /etc/minstallconfig.xml ]; then
+  Installer="/System/Library/PrivateFrameworks/Installation.framework/Resources/Minstaller.app/Contents/MacOS/Minstaller -f /etc/minstallconfig.xml"
+  CatchExit=no
+elif [ -x /Applications/Utilities/Installer.app/Contents/MacOS/Installer ]; then
+  Installer=/Applications/Utilities/Installer.app/Contents/MacOS/Installer
+fi
+
+#
+# Here we go!
+#
+
+
+if   [ -f /etc/rc.cdrom.packagePath ]; then
+    #
+    #If rc.cdrom.packagePath exists, launch the package within instead of an OS Install
+    #
+
+    ${Launch} ${Installer} "`head -1 /etc/rc.cdrom.packagePath`"
+else
+    export OS_INSTALL=1
+    ${Launch} ${Installer}
+fi
+
+err=$?
+
+if [ "${CatchExit:-yes}_" = "yes_" ]; then
+  #
+  # We only get here if the Installer exits abnormally
+  # The script that launched us will power off the machine, so we'll reboot first
+  #
+
+  # sleep just long enough for the WS to settle in case the installer crashes instantly
+  sleep 2
+
+  # (The [S] keeps us from matching ourself)
+  kill `ps -ax | awk '/Window[S]erver/ {print $1}'`
+
+  # popconsole tells the kernel to tear down the blue screen and spinning kernel wheel
+  /System/Installation/CDIS/popconsole
+
+  echo
+  echo "The Installer has quit due to an unexpected error. (exit code ${err})"
+  echo
+
+  echo
+  echo "Please restart your computer."
+  read
+fi
+
+/sbin/reboot
+

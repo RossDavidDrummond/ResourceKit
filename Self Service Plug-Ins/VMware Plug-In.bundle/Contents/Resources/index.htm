@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script type="text/javascript" src="jquery-1.6.2.min.js"></script>
+        <script type="text/javascript" src="index.js"></script> 
+        
+        <link rel="stylesheet" type="text/css" href="index.css" />
+        
+        <script type="text/javascript">
+            $(document).ready(function(){
+                            
+                              $(".trigger").live("click", function(){                       
+                                                 $(this).toggleClass("active").next().slideToggle("slow");
+                                                 $(this).children("a").children("#arrowicon").toggleClass("rotate90");
+                                                 if($(this).children("a").children("#arrowicon").hasClass("rotate90")){
+                                                    $(this).children("a").children("#arrowicon").css("background-position", "-64px -16px");
+                                                 }else{
+                                                    $(this).children("a").children("#arrowicon").css("background-position", "-32px -16px");
+                                                 }
+                }); 
+                              
+            });
+        </script>
+    </head>
+    <body >
+        
+        <div id="container"> 
+            <div id="header">VMware Virtual Machines</div>
+            
+            <div id="content">
+                <table id="mainTable">
+                    
+                </table>
+            </div>
+            <div id="footer"></div>
+        </div>
+        
+    </body>
+</html>
